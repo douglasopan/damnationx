@@ -1,4 +1,7 @@
 # DamnationX
+<p align="center">
+  <img width="512" height="768"  alt="image" src="https://github.com/user-attachments/assets/64de5c9a-e64f-4c9c-8c89-ede3522c0b18" />
+</p>
 
 DamnationX is a build of [DevilutionX](https://github.com/diasurgical/devilutionX), the open source port of Diablo. It adds optional HD art drawn with WebGPU, a lobby for playing online, and sound packs you can import from your own copy of Diablo II or Diablo II: Resurrected.
 
