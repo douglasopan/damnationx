@@ -7,6 +7,10 @@ DamnationX is a build of [DevilutionX](https://github.com/diasurgical/devilution
 
 This repository only hosts the release builds. Download them from the [Releases](https://github.com/trygentic/damnationx/releases) page.
 
+## Latest beta
+
+Beta 3 adds an optional Run button and stamina bar in single-player games. Enemies chasing a running player can keep up, while attack and spell speed stays the same. It also fixes wrapped chat text in the browser and improves HD warrior sprite selection. Downloads are available for Apple Silicon macOS and the browser; Windows, Linux, and Android builds are still being validated.
+
 ## You need the Diablo game data
 
 DamnationX doesn't include Diablo's art, music or sounds. You need `DIABDAT.MPQ` from a copy you own:
