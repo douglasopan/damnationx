@@ -9,7 +9,7 @@ This repository only hosts the release builds. Download them from the [Releases]
 
 ## Latest beta
 
-Beta 3 adds an optional Run button and stamina bar in single-player games. Enemies chasing a running player can keep up, while attack and spell speed stays the same. It also fixes wrapped chat text in the browser and improves HD warrior sprite selection. Downloads are available for Apple Silicon macOS and the browser; Windows, Linux, and Android builds are still being validated.
+Beta 4 adds the first Windows, Linux and Android downloads. The game itself is the same as beta 3, so the macOS app and browser build from beta 3 are still current. The new builds play single player and support DevilutionX's TCP/IP and ZeroTier multiplayer, but they can't reach the DamnationX lobby yet. They don't include the WebGPU HD art renderer either.
 
 ## You need the Diablo game data
 
@@ -55,9 +55,32 @@ If you use another web server, make sure it sends `.wasm` files as `application/
 
 A copy you host yourself is for single player. For online games, play at [damnationx.net](https://damnationx.net) or use the macOS app.
 
-## Windows and Linux
+## Play on Windows
 
-There are no Windows or Linux builds yet.
+The Windows build is for 64-bit Windows.
+
+1. Download `DamnationX-<version>-windows-x64.zip` and unzip it anywhere.
+2. Copy `DIABDAT.MPQ` into the unzipped folder, next to `devilutionx.exe`. You can also put it in `%APPDATA%\diasurgical\devilution\`.
+3. Run `devilutionx.exe`. The program isn't signed, so Windows SmartScreen may warn you the first time. Click More info, then Run anyway.
+
+## Play on Linux
+
+There are builds for x86_64 and for 64-bit ARM (aarch64).
+
+1. Download `DamnationX-<version>-linux-x86_64.tar.xz` or `DamnationX-<version>-linux-arm64.tar.xz` and extract it.
+2. Copy `DIABDAT.MPQ` into `~/.local/share/diasurgical/devilution/`, or into the extracted folder next to `devilutionx`.
+3. Run `./devilutionx`. On x86_64, run `./devilutionx.sh` instead if you want Discord status to work.
+
+The archive also contains `devilutionx.deb` and `devilutionx.rpm` if you'd rather install it with your package manager. Either way you need SDL2, SDL2_image and libpng from your distribution. The builds were made on Ubuntu 24.04, so they need a distribution with glibc 2.39 or newer.
+
+## Play on Android
+
+The Android build needs Android 5.0 or later.
+
+1. Download `DamnationX-<version>-android.apk` on the device and open it. Allow installs from your browser or file manager if Android asks.
+2. Open DevilutionX (Dev). It asks for the game data the first time: pick your `DIABDAT.MPQ`, or download the shareware data.
+
+This APK is a debug build signed with a development key. It installs next to an existing DevilutionX app rather than replacing it, and a later release signed with a different key may need you to uninstall it first. Your saves are kept in the app's folder under `Android/data/org.diasurgical.devilutionx.dev/`.
 
 ## Diablo II sounds
 
@@ -70,7 +93,7 @@ Nothing from Diablo II is uploaded anywhere.
 
 ## Reporting problems
 
-Open an issue on this repository. Say which build you used (macOS or browser), what you did, and what happened.
+Open an issue on this repository. Say which build you used (macOS, Windows, Linux, Android or browser), what you did, and what happened.
 
 ## License
 
