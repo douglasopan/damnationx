@@ -18,6 +18,7 @@
 #include "control/control.hpp"
 #include "engine/animationinfo.h"
 #include "engine/assets.hpp"
+#include "engine/render/hd_sprites_loader.hpp"
 #include "engine/render/hd_webgpu_async.hpp"
 #include "engine/render/ui_scale.hpp"
 #include "engine/render/webgpu_presenter.hpp"
@@ -40,11 +41,12 @@ namespace {
 using skm::Mat4;
 using skm::Vec3;
 
+// The model ships in the HD art pack (hd/3d/warrior/), not with the game. Without it the HD sprites are drawn.
 #if defined(__EMSCRIPTEN__) || defined(__ANDROID__)
-// 1024 px base colour: a quarter of the browser download, and half the APK and GPU memory on phones.
-constexpr char ModelAsset[] = "3d\\warrior\\warrior_1024.glb";
+// 1024 px base colour: a quarter of the browser download, and half the GPU memory on phones.
+constexpr char ModelAsset[] = "hd/3d/warrior/warrior_1024.glb";
 #else
-constexpr char ModelAsset[] = "3d\\warrior\\warrior.glb";
+constexpr char ModelAsset[] = "hd/3d/warrior/warrior.glb";
 #endif
 
 constexpr float Pi = 3.14159265358979F;
@@ -72,7 +74,7 @@ constexpr std::array<float, 3> BakeAmbient { 0.06F * 0.6F, 0.065F * 0.6F, 0.075F
 constexpr float BakeExposure = 0.70710678F; // -0.5 EV
 
 // ---- Model state ----
-enum class LoadState : uint8_t { Unloaded, Loaded, Failed };
+enum class LoadState : uint8_t { Unloaded, Loading, Loaded, Failed };
 LoadState State = LoadState::Unloaded;
 /** The GPU side failed (shader / pipeline / resources): draw the prerendered sprites instead. */
 bool GpuBroken = false;
@@ -176,19 +178,28 @@ bool DecodeImage(const std::vector<uint8_t> &bytes, MipChain &chain)
 #endif
 }
 
-bool LoadModel()
+/** Fetches the model from the HD pack; Loading while the browser fetch is in flight. */
+LoadState LoadModel()
 {
 	const auto start = std::chrono::steady_clock::now();
-	auto asset = LoadAsset(ModelAsset);
-	if (!asset.has_value()) {
-		LogError("3D warrior: {}", asset.error());
-		return false;
+#if DEVILUTIONX_WEBGPU
+	std::string file;
+	bool fetchFailed = false;
+	if (!hd_loader::FetchText(ModelAsset, file, fetchFailed, /*optional=*/true)) {
+		if (!fetchFailed)
+			return LoadState::Loading;
+		Log("3D warrior: {} is not in the HD pack; drawing the HD sprites", ModelAsset);
+		return LoadState::Failed;
 	}
-	const std::string_view bytes = static_cast<std::string_view>(*asset);
+	const std::string_view bytes = file;
+#else
+	const std::string_view bytes;
+	return LoadState::Failed;
+#endif
 	std::string error;
 	if (!LoadGltfModel(std::span<const uint8_t>(reinterpret_cast<const uint8_t *>(bytes.data()), bytes.size()), Model, error)) {
 		LogError("3D warrior: {}: {}", ModelAsset, error);
-		return false;
+		return LoadState::Failed;
 	}
 	Images.assign(Model.images.size(), {});
 	for (size_t i = 0; i < Model.images.size(); ++i) {
@@ -199,7 +210,7 @@ bool LoadModel()
 	}
 	if (Model.bodyImage >= 0 && Images[static_cast<size_t>(Model.bodyImage)].empty()) {
 		LogError("3D warrior: could not decode the base colour image");
-		return false;
+		return LoadState::Failed;
 	}
 	Model.imageBytes.clear();
 	Model.imageBytes.shrink_to_fit();
@@ -217,7 +228,7 @@ bool LoadModel()
 	}
 	if (Model.paletteSize() > 64) {
 		LogError("3D warrior: {} palette entries (max 64)", Model.paletteSize());
-		return false;
+		return LoadState::Failed;
 	}
 	Clips.stand = Model.findClip("stand");
 	Clips.walk = Model.findClip("walk");
@@ -230,7 +241,7 @@ bool LoadModel()
 	Clips.death = Model.findClip("death");
 	if (Clips.stand < 0 || Clips.walk < 0) {
 		LogError("3D warrior: the stand / walk clips are missing");
-		return false;
+		return LoadState::Failed;
 	}
 	Parts.swordRight = PartBit("Sword_RIGHT");
 	Parts.shield = PartBit("Shield_LEFT");
@@ -244,7 +255,7 @@ bool LoadModel()
 	Log("3D warrior: {} vertices, {} triangles, {} joints, {} clips, {} px body texture, equipment {} / {} / {} px ({} ms)", Model.vertices.size(),
 	    Model.indices.size() / 3, Model.joints.size(), Model.clips.size(), width(Textures.body), width(Textures.equipBase), width(Textures.equipNormal),
 	    width(Textures.equipMr), elapsed);
-	return true;
+	return LoadState::Loaded;
 }
 
 // ---- Pose from the player ----
@@ -433,8 +444,8 @@ bool SkinnedPlayerWanted(const Player &player)
 
 bool SkinnedModelLoaded()
 {
-	if (State == LoadState::Unloaded)
-		State = LoadModel() ? LoadState::Loaded : LoadState::Failed;
+	if (State == LoadState::Unloaded || State == LoadState::Loading)
+		State = LoadModel();
 	return State == LoadState::Loaded;
 }
 

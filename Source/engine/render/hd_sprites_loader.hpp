@@ -48,8 +48,11 @@ int RequestStraightImage(const char *url);
 bool UploadImageRows(int job, WGPUDevice device, WGPUTexture texture, int width, int height, int firstRow, int rowCount);
 #endif
 
-/** Fetches a small text file once (revalidated with the server); true when `text` holds it. `failed` is set when the fetch failed. */
-bool FetchText(const char *url, std::string &text, bool &failed);
+/**
+ * Fetches a file once (revalidated with the server); true when `text` holds its bytes. `failed` is set when the fetch
+ * failed. `optional` files (the 3D warrior, which only some HD packs carry) are not logged as errors when missing.
+ */
+bool FetchText(const char *url, std::string &text, bool &failed, bool optional = false);
 
 } // namespace devilution::hd_loader
 

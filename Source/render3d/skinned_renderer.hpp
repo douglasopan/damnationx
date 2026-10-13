@@ -4,8 +4,9 @@
  *
  * GPU skinned rendering of the 3D warrior (assets/3d/warrior/warrior.glb).
  *
- * The model (render3d/gltf_model.hpp) is loaded on first use from the game assets ("3d\\warrior\\warrior.glb",
- * packaged into devilutionx.mpq / the assets directory like the other DevilutionX assets). Each draw samples the clip
+ * The model (render3d/gltf_model.hpp) is part of the HD art pack, not the game: it is loaded on first use from
+ * "hd/3d/warrior/warrior.glb" (warrior_1024.glb in the browser and on Android), and without it the HD sprites are
+ * drawn. Each draw samples the clip
  * matching the player's mode on the CPU (TRS keys, lerp / slerp, hierarchy, inverse bind) into a joint palette, and a
  * WGSL vertex shader skins the mesh with it (4 weights). The fragment shader is a small PBR: base colour texture (body
  * and hair) or the manifest's flat equipment colours, Lambert diffuse plus GGX specular with the material's metallic /

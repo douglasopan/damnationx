@@ -383,13 +383,14 @@ void CancelImage(int job)
 	loader.Discard(loader.Take(job));
 }
 
-bool FetchText(const char *url, std::string &text, bool &failed)
+bool FetchText(const char *url, std::string &text, bool &failed, bool optional)
 {
 	std::vector<uint8_t> bytes;
 	const std::string path = ResolvePath(url);
 	failed = !ReadFile(path, bytes);
 	if (failed) {
-		LogError("HD text load failed: {}", path);
+		if (!optional)
+			LogError("HD text load failed: {}", path);
 		return false;
 	}
 	text.assign(bytes.begin(), bytes.end());

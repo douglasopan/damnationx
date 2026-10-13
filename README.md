@@ -9,7 +9,7 @@ This repository holds the source code and the release builds. Download the build
 
 ## Latest beta
 
-Beta 5 brings the HD art to Windows, Linux and Android. These builds now use WebGPU (Direct3D 12 on Windows, Vulkan on Linux and Android), the same renderer as the macOS app and the browser. If you put an `hd` folder where the game can find it, HD turns on by itself; there's no command line flag to pass. You can switch it off under Settings > Graphics > HD Art. The Windows, Linux and Android builds still can't reach the DamnationX lobby, but TCP/IP and ZeroTier multiplayer work. Nothing changed for macOS and the browser, so their beta 3 downloads are still current.
+Beta 6 adds an animated 3D model for the Warrior on Windows, Linux and Android. The model is part of the HD pack, in its `hd/3d/warrior` folder: with an HD pack that includes it, Warriors are drawn as the 3D model instead of HD sprites. Packs without that folder keep working and show the HD sprites. Settings > Graphics > 3D Warrior Model switches back to the HD sprites. The Windows, Linux and Android builds still can't reach the DamnationX lobby, but TCP/IP and ZeroTier multiplayer work. Nothing changed for macOS and the browser, so their beta 3 downloads are still current.
 
 ## You need the Diablo game data
 
@@ -90,7 +90,9 @@ The HD art pack isn't distributed here. If you have it, here's where each build 
 
 - Windows: next to `devilutionx.exe`, or `%APPDATA%\diasurgical\devilution\hd`.
 - Linux: next to `devilutionx`, or `~/.local/share/diasurgical/devilution/hd`.
-- Android: long-press the DamnationX icon and choose Import Data, or tap Import Data on the game data screen, then pick the HD pack zip. Use the WebP version of the pack on phones: it's about 800 MB, against 3 GB for the PNG one. The app unpacks it and shows HD the next time it starts.
+- Android: long-press the DamnationX icon and choose Import Data, or tap Import Data on the game data screen, then pick the HD pack zip. The WebP version of the pack is the better fit for phones: it's about 830 MB, against 3 GB for the PNG one. The app unpacks it and shows HD the next time it starts.
+
+If the HD pack has a `3d/warrior` folder inside `hd`, Warriors are drawn as an animated 3D model instead of HD sprites. Settings > Graphics > 3D Warrior Model switches that off.
 
 If the `hd` folder is in place but WebGPU can't start, the game falls back to the classic graphics and says so in the message log. Updating the graphics driver usually fixes that. The HD fonts aren't used yet, so text stays in the classic font.
 

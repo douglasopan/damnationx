@@ -246,6 +246,7 @@ endif()
 
 if(DEVILUTIONX_WEBGPU)
   list(APPEND devilutionx_assets hd/cathedral-floor-atlas.png)
+  # The 3D warrior (assets/3d/warrior) is not packed: it ships in the HD art pack as hd/3d/warrior/.
 endif()
 
 if(APPLE)

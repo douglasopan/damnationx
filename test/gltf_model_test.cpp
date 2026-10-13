@@ -16,6 +16,15 @@ using skm::Mat4;
 using skm::Quat;
 using skm::Vec3;
 
+bool HaveWarrior()
+{
+	return std::ifstream(WARRIOR_GLB_PATH, std::ios::binary).good();
+}
+
+#define REQUIRE_WARRIOR() \
+	if (!HaveWarrior()) \
+	GTEST_SKIP() << "warrior.glb is not in this checkout (it ships in the HD art pack)"
+
 const GltfModel &Warrior()
 {
 	static GltfModel model;
@@ -61,6 +70,7 @@ TEST(GltfModel, InverseUndoesTrsAndPerspective)
 
 TEST(GltfModel, LoadsTheWarrior)
 {
+	REQUIRE_WARRIOR();
 	const GltfModel &model = Warrior();
 	EXPECT_EQ(model.joints.size(), 33U);
 	EXPECT_EQ(model.clips.size(), 9U);
@@ -77,6 +87,7 @@ TEST(GltfModel, LoadsTheWarrior)
 
 TEST(GltfModel, EquipmentHasBakedPbrTextures)
 {
+	REQUIRE_WARRIOR();
 	// The body samples its own base colour; the equipment shares one baked atlas set (base colour, normal,
 	// metallic-roughness), distinct from the body's image.
 	const GltfModel &model = Warrior();
@@ -101,6 +112,7 @@ TEST(GltfModel, EquipmentHasBakedPbrTextures)
 
 TEST(GltfModel, RestPaletteIsIdentityForSkinJoints)
 {
+	REQUIRE_WARRIOR();
 	// In the bind pose every joint matrix is global * inverse bind = identity (glTF skinning contract).
 	const GltfModel &model = Warrior();
 	std::vector<NodePose> pose;
@@ -124,6 +136,7 @@ TEST(GltfModel, RestPaletteIsIdentityForSkinJoints)
 
 TEST(GltfModel, LoopingClipWrapsModuloDuration)
 {
+	REQUIRE_WARRIOR();
 	const GltfModel &model = Warrior();
 	const int walk = model.findClip("walk");
 	ASSERT_GE(walk, 0);
@@ -143,6 +156,7 @@ TEST(GltfModel, LoopingClipWrapsModuloDuration)
 
 TEST(GltfModel, NonLoopingClipClamps)
 {
+	REQUIRE_WARRIOR();
 	const GltfModel &model = Warrior();
 	const int death = model.findClip("death");
 	ASSERT_GE(death, 0);
@@ -161,6 +175,7 @@ TEST(GltfModel, NonLoopingClipClamps)
 
 TEST(GltfModel, SwordFollowsTheRightHand)
 {
+	REQUIRE_WARRIOR();
 	const GltfModel &model = Warrior();
 	const int attack = model.findClip("attack");
 	const int hand = model.findNode("mixamorig:RightHand");

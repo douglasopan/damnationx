@@ -323,7 +323,7 @@ std::unordered_map<std::string, TextRequest> TextRequests;
 
 } // namespace
 
-bool FetchText(const char *url, std::string &text, bool &failed)
+bool FetchText(const char *url, std::string &text, bool &failed, bool /*optional*/)
 {
 	failed = false;
 	auto [it, inserted] = TextRequests.try_emplace(url);
