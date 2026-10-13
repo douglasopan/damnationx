@@ -9,7 +9,7 @@ This repository only hosts the release builds. Download them from the [Releases]
 
 ## Latest beta
 
-Beta 4 adds the first Windows, Linux and Android downloads. The game itself is the same as beta 3, so the macOS app and browser build from beta 3 are still current. The new builds play single player and support DevilutionX's TCP/IP and ZeroTier multiplayer, but they can't reach the DamnationX lobby yet. They don't include the WebGPU HD art renderer either.
+Beta 5 brings the HD art to Windows, Linux and Android. These builds now use WebGPU (Direct3D 12 on Windows, Vulkan on Linux and Android), the same renderer as the macOS app and the browser. If you put an `hd` folder where the game can find it, HD turns on by itself; there's no command line flag to pass. You can switch it off under Settings > Graphics > HD Art. The Windows, Linux and Android builds still can't reach the DamnationX lobby, but TCP/IP and ZeroTier multiplayer work. Nothing changed for macOS and the browser, so their beta 3 downloads are still current.
 
 ## You need the Diablo game data
 
@@ -57,30 +57,42 @@ A copy you host yourself is for single player. For online games, play at [damnat
 
 ## Play on Windows
 
-The Windows build is for 64-bit Windows.
+The Windows build needs 64-bit Windows 10 or later and a graphics card with Direct3D 12.
 
 1. Download `DamnationX-<version>-windows-x64.zip` and unzip it anywhere.
 2. Copy `DIABDAT.MPQ` into the unzipped folder, next to `devilutionx.exe`. You can also put it in `%APPDATA%\diasurgical\devilution\`.
 3. Run `devilutionx.exe`. The program isn't signed, so Windows SmartScreen may warn you the first time. Click More info, then Run anyway.
 
+Keep `d3dcompiler_47.dll` next to the exe. Without it the game starts with the classic graphics and no HD.
+
 ## Play on Linux
 
-There are builds for x86_64 and for 64-bit ARM (aarch64).
+There are builds for x86_64 and for 64-bit ARM (aarch64). They need glibc 2.38 or newer (Ubuntu 24.04, Debian 13, Fedora 39 or later), an X11 or Wayland desktop, and a working Vulkan driver. On Debian and Ubuntu that means `libvulkan1` and `mesa-vulkan-drivers`, or the NVIDIA driver. SDL is built in, so you don't need to install it.
 
 1. Download `DamnationX-<version>-linux-x86_64.tar.xz` or `DamnationX-<version>-linux-arm64.tar.xz` and extract it.
 2. Copy `DIABDAT.MPQ` into `~/.local/share/diasurgical/devilution/`, or into the extracted folder next to `devilutionx`.
-3. Run `./devilutionx`. On x86_64, run `./devilutionx.sh` instead if you want Discord status to work.
+3. Run `./devilutionx`.
 
-The archive also contains `devilutionx.deb` and `devilutionx.rpm` if you'd rather install it with your package manager. Either way you need SDL2, SDL2_image and libpng from your distribution. The builds were made on Ubuntu 24.04, so they need a distribution with glibc 2.39 or newer.
+If you'd rather use your package manager, the release also has `.deb` and `.rpm` packages. If Vulkan doesn't work on your machine, `./devilutionx --no-webgpu` starts the game with the classic graphics.
 
 ## Play on Android
 
-The Android build needs Android 5.0 or later.
+The Android build needs Android 7.0 or later on a 64-bit ARM or x86_64 device with Vulkan.
 
 1. Download `DamnationX-<version>-android.apk` on the device and open it. Allow installs from your browser or file manager if Android asks.
-2. Open DevilutionX (Dev). It asks for the game data the first time: pick your `DIABDAT.MPQ`, or download the shareware data.
+2. Open DamnationX (Dev). It asks for the game data the first time: pick your `DIABDAT.MPQ`, or download the shareware data.
 
-This APK is a debug build signed with a development key. It installs next to an existing DevilutionX app rather than replacing it, and a later release signed with a different key may need you to uninstall it first. Your saves are kept in the app's folder under `Android/data/org.diasurgical.devilutionx.dev/`.
+This APK is a debug build signed with a development key. It installs as a separate app from earlier betas and from DevilutionX, so you'll need to add your game data again. A later release signed with a different key may need you to uninstall it first. Your files are kept under `Android/data/net.damnationx.dev/`.
+
+## HD art
+
+The HD art pack isn't distributed here. If you have it, here's where each build looks for it. The folder must be named `hd` and contain `sprites.txt`.
+
+- Windows: next to `devilutionx.exe`, or `%APPDATA%\diasurgical\devilution\hd`.
+- Linux: next to `devilutionx`, or `~/.local/share/diasurgical/devilution/hd`.
+- Android: long-press the DamnationX icon and choose Import Data, or tap Import Data on the game data screen, then pick the HD pack zip. Use the WebP version of the pack on phones: it's about 800 MB, against 3 GB for the PNG one. The app unpacks it and shows HD the next time it starts.
+
+If the `hd` folder is in place but WebGPU can't start, the game falls back to the classic graphics and says so in the message log. Updating the graphics driver usually fixes that. The HD fonts aren't used yet, so text stays in the classic font.
 
 ## Diablo II sounds
 
