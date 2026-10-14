@@ -1,0 +1,50 @@
+name: Portable HUD validation
+run-name: Portable HUD ${{ inputs.revision }}
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Exact contribution commit to validate
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout the pinned contribution
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ inputs.revision }}
+          persist-credentials: false
+      - name: Validate immutable revision
+        env:
+          EXPECTED_REVISION: ${{ inputs.revision }}
+        run: |
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+      - name: Standalone CMake and CTest with GCC and Clang
+        run: |
+          set -euo pipefail
+          for compiler in g++ clang++; do
+            build="build-hud-${compiler}"
+            cmake -S modules/hud -B "$build" -DCMAKE_CXX_COMPILER="$compiler" -DCMAKE_CXX_FLAGS='-Wall -Wextra -Werror -pedantic'
+            cmake --build "$build" --parallel 1
+            ctest --test-dir "$build" --output-on-failure
+            "$build/diablo_hud_headless"
+          done
+      - name: Test context contract in C++17 and C++23 when present
+        run: |
+          set -euo pipefail
+          testfile=modules/hud/adapters/tests/ui_context_bridge_tests.cpp
+          if test -f "$testfile"; then
+            for compiler in g++ clang++; do
+              for standard in c++17 c++23; do
+                output="bridge-${compiler}-${standard}"
+                "$compiler" -std="$standard" -Wall -Wextra -Werror -pedantic -I modules/hud/include -I modules/hud/adapters "$testfile" -o "$output"
+                "./$output"
+              done
+            done
+          fi
