@@ -8,8 +8,8 @@ Source lineage for this extraction: integration baseline `24080e8`, retaining HU
 
 DevilutionX is maintained by Diasurgical. Diablo and the original game data remain the work and trademarks of Blizzard Entertainment; inherited notices include Blizzard Entertainment 1996–2001. This module does not claim affiliation, endorsement or certification by Blizzard Entertainment or GOG.com.
 
-The package contains HUD source, headers, host adapters, tests and documentation. It includes no proprietary game data, MPQs, artwork, fonts, HD art pack, Warrior/model data, world renderer, camera code, terrain, exterior or save files. Code licensing does not grant rights to separately supplied assets.
+This core-only package contains portable HUD headers, tests, a headless example and documentation. Native host adapters and the optional theme component are excluded. It includes no proprietary game data, MPQs, artwork, fonts, HD art pack, Warrior/model data, world renderer, camera code, terrain, exterior or save files. Code licensing does not grant rights to separately supplied assets.
 
-The standalone core has no Dawn or SDL dependency. Host integrations retain their own dependency notices. A future WebGPU adapter may consume Dawn, whose pinned upstream license is BSD-3-Clause, copyright 2017–2023 The Dawn & Tint Authors. That planned dependency is not linked or redistributed by the core. See [DEPENDENCIES.json](DEPENDENCIES.json).
+The standalone core has no Dawn or SDL dependency. Host integrations retain their own dependency notices. A future WebGPU adapter may consume Dawn, whose pinned upstream license is BSD-3-Clause, copyright 2017–2023 The Dawn & Tint Authors. That planned dependency is not linked or redistributed by the core. The core includes no Dawn files or linked dependency. See [BUILD-CORE.md](docs/BUILD-CORE.md) for the included build entry point.
 
 This is an experimental extraction. A build or test of the standalone core does not certify the native adapter, WebGPU, all platforms, physical input, high DPI or public-target integration.

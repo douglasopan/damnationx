@@ -66,15 +66,13 @@ The host supplies positive dimensions and positive finite output scales for a va
 
 This object owns no pixel snapshot, texture, decoder, native callback or cursor buffer, and does not automatically enforce the native adapter's calls. Its cursor flag records sequencing; it does not prove that cursor pixels were preserved. Actual capture/recovery/upload/presentation and disposal remain adapter work. `materialize()` marks a transport fallback without ending the composition phase, so later panels and overlays can still be composed. `recover()` ends the frame in the recovered phase; it is not a substitute for continued materialized-panel painting.
 
-## Optional theme manifest - C++23
+## Excluded components
 
-`optional/theme/theme.hpp` is a separate header-only standard-library component in namespace `diablo_hud::theme`; it requires `std::expected` and is not included by the C++17 core. It exposes `Theme`, `ColorRole`, `Rgb`, `FontOverride`, `ParseIni`, `Validate`, `SerializeIni` and `MergeOpacity`. It preserves the native `d3d.hud-theme` version 1 text schema and bounded parsing without reading any resource. See its [component contract](../optional/theme/README.md).
-
-Native theme types/functions remain compatibility wrappers and convert presentation values at the adapter boundary. Resource validation, decoder probes, native glyph metrics, staging, selected-theme revision and complete fallback stay with the host. Qualification of this optional component and its delegation is separate from C++17 core qualification.
+This core-only package does not include the optional C++23 theme, native compatibility wrappers or any renderer adapter. The following lifecycle table describes responsibilities of a future host integration; those engine entry points are reference boundaries from the separate native draft, not APIs shipped by this module.
 
 ## Native compatibility lifecycle
 
-The existing engine-facing APIs remain under namespace `devilution`; `hud_core_bridge.hpp` converts their values rather than replacing their native types. Source include/CPP shims preserve existing call sites and build paths. These are adapter APIs, not standalone-core entry points:
+The originating native draft retains engine-facing APIs under namespace `devilution` and a `hud_core_bridge.hpp` conversion layer. That draft is excluded and has no native runtime qualification for this extraction. A host must implement equivalent integration responsibilities explicitly; these reference entries are not standalone-core entry points:
 
 | Lifecycle | Retained entry points / host responsibility |
 |---|---|
@@ -82,9 +80,9 @@ The existing engine-facing APIs remain under namespace `devilution`; `hud_core_b
 | Begin/update/end edit | `BeginD3dHudCustomization` / `BeginD3dHudEdgeCustomization`, `UpdateD3dHudCustomization`, `EndD3dHudCustomization`; floating windows use their `BeginD3dWindowDrag`, `UpdateD3dFloatingPanelDrag`, `EndD3dFloatingPanelDrag` equivalents. |
 | Cancel/reset | `CancelD3dHudCustomization`, `CancelD3dFloatingPanelDrag`; deliberate profile resets use `ResetD3dHudCustomization`, `ResetAllD3dHudCustomizations` or `ResetD3dFloatingPanelLayout`. Keep a consumed input pair owned until its release. |
 | Frame visibility/capture | `BeginD3dHudAuxiliaryFrame`, `BeginD3dHudPresentationFrame`, `BeginD3dPanelPresentationFrame`; the native frame path supplies real visibility, surfaces and cursor hooks. |
-| Seal/finalize/present | HUD foreground seal is separate from panel seal; panel finalize follows actual cursor drawing. Prepare/Render APIs own admission and frozen-pixel recovery, as described in [INTEGRATION.md](INTEGRATION.md). |
+| Seal/finalize/present | HUD foreground seal is separate from panel seal; panel finalize follows actual cursor drawing. Prepare/Render APIs own admission and frozen-pixel recovery, as host-owned integration work outside this package. |
 | Invalidate/dispose | `InvalidateD3dHudPresentationFrame` / `InvalidateD3dPanelPresentationFrame` discard captures; `ResetD3dHudPresentationResources` / `ResetD3dPanelPresentationResources` dispose caches before renderer teardown. They do not reset profile layout. |
 
 A host chooses and names its coordinate spaces. For the native baseline, lower/floating HUD rectangles use the host's logical surface space. For a host with UI Scale, `MousePosition` may already be in UI space; physical/screen pointer, UI pointer and scoped panel-native pointer must remain distinct. A valid WebGPU host can have `SDL_Renderer == nullptr`; context cannot depend on the presence of that object.
 
-API availability, native adapter wiring, test commands and result claims must match the exact candidate headers and [TESTING.md](TESTING.md). Standalone tests and frame flags do not certify full host composition or renderer behavior.
+API availability, native adapter wiring, test commands and result claims must match the exact candidate headers and [BUILD-CORE.md](BUILD-CORE.md). Standalone tests and frame flags do not certify full host composition or renderer behavior.
