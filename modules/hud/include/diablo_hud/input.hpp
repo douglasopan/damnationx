@@ -11,7 +11,10 @@ struct Overlay { std::size_t id=0;Rect bounds{};bool visible=false; };
 // Bounds are caller snapshots in one logical coordinate space, bottom-to-top.
 inline Owner ResolvePhysicalOwner(Point point,const std::vector<WindowRecord>&windows,
     Overlay clock={},Overlay minimap={},const std::vector<Overlay>&elements={},bool modal=false,bool relativeCaptured=false) {
-    if(modal)return {OwnerKind::Modal,0};if(relativeCaptured)return {};
+    if(modal)
+        return {OwnerKind::Modal,0};
+    if(relativeCaptured)
+        return {};
     if(clock.visible&&clock.bounds.contains(point))return {OwnerKind::Clock,clock.id};
     for(auto it=windows.rbegin();it!=windows.rend();++it)if(it->visible&&it->visual.contains(point)) {
         const auto native=VisualToNative(point,it->native,it->visual);
@@ -26,9 +29,13 @@ class PointerScope {
 public:
     PointerScope(PointerState &state,const std::vector<WindowRecord>&windows,bool clockOwns=false,bool relativeCaptured=false)
         :state_(state),saved_(state.pointer),owner_(state.depth==0) {
-        if(owner_){state_.captured.reset();if(!clockOwns&&!relativeCaptured)
-            for(auto it=windows.rbegin();it!=windows.rend();++it)if(it->visible&&it->visual.contains(saved_)){state_.captured=*it;break;}
-            if(state_.captured)state_.pointer=VisualToNative(saved_,state_.captured->native,state_.captured->visual);}
+        if(owner_){
+            state_.captured.reset();
+            if(!clockOwns&&!relativeCaptured)
+                for(auto it=windows.rbegin();it!=windows.rend();++it)if(it->visible&&it->visual.contains(saved_)){state_.captured=*it;break;}
+            if(state_.captured)
+                state_.pointer=VisualToNative(saved_,state_.captured->native,state_.captured->visual);
+        }
         ++state_.depth;
     }
     ~PointerScope(){--state_.depth;if(owner_){state_.pointer=saved_;state_.captured.reset();}}

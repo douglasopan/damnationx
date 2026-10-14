@@ -183,7 +183,9 @@ inline NormalizedRect storeOverride(std::size_t id,Rect r,const Context &c,Size 
     return {units(r.position.x,c.logicalWidth),units(r.position.y,c.logicalHeight),std::max(1,units(r.size.width,c.logicalWidth)),std::max(1,units(r.size.height,c.logicalHeight))};
 }
 inline Rect applyOverride(std::size_t id,Rect standard,const Context&c,const Overrides&values,Size minimum={0,0}) {
-    if(id>=values.size()||!values[id])return standard;const auto &r=*values[id];
+    if(id>=values.size()||!values[id])
+        return standard;
+    const auto &r=*values[id];
     const Point p{r.x*c.logicalWidth/NormalizedUnits,r.y*c.logicalHeight/NormalizedUnits};
     const Size size=id==ClockElement||id==MinimapElement?Size{(r.x+r.width)*c.logicalWidth/NormalizedUnits-p.x,(r.y+r.height)*c.logicalHeight/NormalizedUnits-p.y}
         :Size{r.width*c.logicalWidth/NormalizedUnits,r.height*c.logicalHeight/NormalizedUnits};
@@ -216,12 +218,17 @@ public:
         gesture_=Gesture{id,clampElement(id,r,c,minimum),pointer,std::uint8_t(edges&15),c,values_[id]};return true;
     }
     bool update(Point pointer,const Context&c,Eligibility eligible={},Size minimum={0,0}) {
-        if(!gesture_)return false;if(!eligible.allows()||!sameTransform(gesture_->context,c)){cancel();return false;}
+        if(!gesture_)
+            return false;
+        if(!eligible.allows()||!sameTransform(gesture_->context,c)){cancel();return false;}
         values_[gesture_->id]=storeOverride(gesture_->id,resizePreview(gesture_->id,gesture_->original,gesture_->start,pointer,gesture_->edges,c,minimum),c,minimum);++generation_;return true;
     }
     // Revalidate the UP even if no MOVE followed a DPI/modal/visibility change.
     bool end(Point pointer,const Context&c,Eligibility eligible={},Size minimum={0,0}) {
-        if(!update(pointer,c,eligible,minimum))return false;gesture_.reset();return true;
+        if(!update(pointer,c,eligible,minimum))
+            return false;
+        gesture_.reset();
+        return true;
     }
     bool commit(const Context&c,Eligibility eligible={}) {
         if(!gesture_)return false;
